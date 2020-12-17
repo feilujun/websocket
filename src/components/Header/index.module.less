@@ -1,0 +1,42 @@
+.header {
+    display: flex;
+    background-color: #ffffff;
+    width: 100%;
+    z-index: 2;
+    height: 48px;
+    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+}
+
+.icon {
+    cursor: pointer;
+    flex: none;
+    width: 200px;
+    border-bottom: 1px solid #e8e8e8;
+    text-align: center;
+    line-height: 48px;
+
+    >img {
+        height: 32px;
+    }
+}
+
+.menu {
+    flex: 1;
+}
+
+.user {
+    flex: none;
+    width: 300px;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+//黑色主题
+.dark {
+    color: rgba(255, 255, 255, 0.65);
+    background: #001529;
+
+    .icon,
+    .user {
+        border-bottom-color: transparent;
+    }
+}

@@ -1,0 +1,51 @@
+{
+    "name": "quant-test1",
+    "version": "1.0.0",
+    "description": "description",
+    "author": "author",
+    "private": true,
+    "homepage": "./",
+    "dependencies": {
+        "@babel/plugin-proposal-decorators": "^7.10.3",
+        "antd": "^3.26.12",
+        "array-move": "^3.0.1",
+        "babel-plugin-import": "^1.13.0",
+        "cra-template": "1.0.3",
+        "customize-cra": "^1.0.0",
+        "dva": "^2.4.1",
+        "dva-loading": "^3.0.20",
+        "less": "^3.11.3",
+        "less-loader": "^6.1.2",
+        "quant-ui": "^1.5.0",
+        "react": "^16.13.1",
+        "react-app-rewired": "^2.1.6",
+        "react-dom": "^16.13.1",
+        "react-loadable": "^5.5.0",
+        "react-scripts": "3.4.1",
+        "redux-logger": "^3.0.6"
+    },
+    "scripts": {
+        "start": "react-app-rewired start",
+        "build": "react-app-rewired build",
+        "test": "react-app-rewired test",
+        "add-yarn": "npm install -g yarn",
+        "set-npm-config": "npm config set registry http://registry.npm.taobao.org/",
+        "set-yarn-config": "yarn config set registry http://registry.npm.taobao.org/"
+    },
+    "eslintConfig": {
+        "extends": "react-app"
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "proxy": "http://192.168.101.195:8080/app/mock/35"
+}

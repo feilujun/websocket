@@ -8,16 +8,16 @@ import moment from 'moment';
 
 const FormItem = Form.Item;
 const confirm = Modal.confirm;
-const datas = [
+const _data = [
   {
-    author: '我',
+    sender: '0',
     content: <p>123</p>,
-    datetime: moment().fromNow(),
+    datetime: moment().format("YYYY-MM-DD HH:mm:ss"),
   },
   {
-    author: '服务器',
+    sender: '1',
     content: <p>123</p>,
-    datetime: moment().fromNow(),
+    datetime: moment().format("YYYY-MM-DD HH:mm:ss"),
   },
 ]
 @Form.create()
@@ -36,76 +36,29 @@ class Index extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      columns: getColumns(this)
+      columns: getColumns(this),
+      isConnected: false,
     }
   }
-  componentDidMount = () => {
-    this.onSearch(1, 10);
-  }
-
-  //新增点击事件
-  addClick = () => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: "setting/save",
-      payload: {
-        addVisible: true,
-        isUpdate: false,
-        currentData: {}
-      }
-    })
-  }
-
-  //删除事件
-  delete = (id) => {
-    const { dispatch } = this.props;
-    confirm({
-      title: '确认删除？',
-      content: '删除后将无法回退！',
-      onOk() {
-        dispatch({
-          type: "setting/delete",
-          payload: { id }
-        })
-      },
-      onCancel() { },
-
-    });
-  }
-
-  //修改事件
-  update = (record) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: "setting/save",
-      payload: {
-        addVisible: true,
-        isUpdate: true,
-        currentData: record
-      }
-    })
-  }
-
-  //查询
-  onSearch = (pageNum, pageSize) => {
-    const { dispatch, form: { validateFields } } = this.props;
-    validateFields((error, values) => {
-      if (!!error) return;
-      dispatch({
-        type: "setting/findByQuery",
-        payload: { ...values, pageNum, pageSize }
-      })
-    })
-  }
-
-  //页码变化回调
-  onChange = ({ current: pageNum, pageSize }) => {
-    this.onSearch(pageNum, pageSize)
-  }
-
+  // componentDidMount = () => {
+  //   this.onSearch(1, 10);
+  // }\
+  
   render() {
     const { dataSource, form: { getFieldDecorator }, loading, pageNum, pageSize, totalCount } = this.props;
     const { columns } = this.state;
+    const SingleMessage = (item) => {
+      return (
+        <div>
+          <Row style={{ color: item.sender === '0' ? "green" : "blue" }}>
+            {item.sender === '0' ? '我 ' : '服务器 '} {item.datetime}
+          </Row>
+          <Row>
+            {item.content}
+          </Row>
+        </div>
+      )
+    }
     return (
       <Card>
         <Form layout={"inline"}>
@@ -120,11 +73,11 @@ class Index extends PureComponent {
           </FormItem>
         </Form>
         <div style={{ marginTop: "24px" }}>
-          <div style={{ height: "400px", width: "60%", overflowY: "auto", border: "1px solid #ccc" }}>
+          <div style={{ height: "400px", width: "60%", overflowY: "auto", border: "1px solid #ccc", padding: "10px" }}>
             <List
-              dataSource={datas}
+              dataSource={_data}
               itemLayout="horizontal"
-              renderItem={props => <Comment {...props} />}
+              renderItem={props => <SingleMessage {...props} />}
             />
           </div>
           <Row style={{ marginTop: 10 }}>

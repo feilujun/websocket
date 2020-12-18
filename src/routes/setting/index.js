@@ -1,9 +1,6 @@
 import React, { PureComponent } from "react";
 import { Card, Button, Form, Modal, Input, DatePicker, Comment, List, Row } from 'antd';
-import { getColumns } from "./utils"
 import { connect } from 'dva';
-import { ExhibitTable } from "quant-ui";
-import AddModal from "./addModal";
 import moment from 'moment';
 
 const FormItem = Form.Item;
@@ -11,11 +8,13 @@ const confirm = Modal.confirm;
 const _data = [
   {
     sender: '0',
+    color: 'green',
     content: <p>123</p>,
     datetime: moment().format("YYYY-MM-DD HH:mm:ss"),
   },
   {
     sender: '1',
+    color: 'blue',
     content: <p>123</p>,
     datetime: moment().format("YYYY-MM-DD HH:mm:ss"),
   },
@@ -31,26 +30,86 @@ const _data = [
     loading: !!loading.effects['setting/findByQuery']
   }
 })
-
 class Index extends PureComponent {
   constructor(props) {
     super(props)
+    this.messagesEnd = null;
+    this.ws = null;
     this.state = {
-      columns: getColumns(this),
       isConnected: false,
+      messageList: []
     }
   }
-  // componentDidMount = () => {
-  //   this.onSearch(1, 10);
-  // }\
-  
+  onConnnect = () => {
+    const { messageList } = this.state
+    const message = {
+      color: 'red',
+      content: <p>连接成功，现在你可以发送信息啦！！！</p>
+    }
+    const url = this.props.form.getFieldValue('url')
+    this.ws = new WebSocket(url)
+    this.ws.onmessage = this.onMessage
+    this.setState({
+      isConnected: true,
+      messageList: [...messageList, message]
+    })
+  }
+  onDisconnect = () => {
+    const { messageList } = this.state
+    this.ws.close()
+    const message = {
+      color: 'red',
+      content: <p>websocket连接已断开!!!</p>
+    }
+    this.setState({
+      isConnected: false,
+      messageList: [...messageList, message]
+    })
+  }
+  onMessage = (message) => {
+    const { messageList } = this.state
+    const { data } = message;
+    const newMessage = {
+      sender: '1',
+      color: 'blue',
+      content: <p>{data}</p>,
+      datetime: moment().format("YYYY-MM-DD HH:mm:ss"),
+    }
+    this.setState({
+      messageList: [...messageList, newMessage]
+    })
+    this.scrollToBottom()
+  }
+  sendMessage = () => {
+    const { messageList } = this.state
+    const message = this.props.form.getFieldValue('message')
+    this.ws.send(message)
+    const newMessage = {
+      sender: '0',
+      color: 'green',
+      content: <p>{message}</p>,
+      datetime: moment().format("YYYY-MM-DD HH:mm:ss"),
+    }
+    this.setState({
+      messageList: [...messageList, newMessage]
+    })
+  }
+  scrollToBottom() {
+    if (this.messagesEnd) {
+        const scrollHeight = this.messagesEnd.scrollHeight;//里面div的实际高度  2000px
+        const height = this.messagesEnd.clientHeight;  //网页可见高度  200px
+        const maxScrollTop = scrollHeight - height; 
+        this.messagesEnd.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
+      //如果实际高度大于可见高度，说明是有滚动条的，则直接把网页被卷去的高度设置为两个div的高度差，实际效果就是滚动到底部了。
+    }
+  }
   render() {
-    const { dataSource, form: { getFieldDecorator }, loading, pageNum, pageSize, totalCount } = this.props;
-    const { columns } = this.state;
+    const { form: { getFieldDecorator } } = this.props;
+    const { isConnected, messageList } = this.state;
     const SingleMessage = (item) => {
       return (
         <div>
-          <Row style={{ color: item.sender === '0' ? "green" : "blue" }}>
+          <Row style={{ color: item.color }}>
             {item.sender === '0' ? '我 ' : '服务器 '} {item.datetime}
           </Row>
           <Row>
@@ -63,29 +122,39 @@ class Index extends PureComponent {
       <Card>
         <Form layout={"inline"}>
           <FormItem>
-            {getFieldDecorator('index')(
+            {getFieldDecorator('url', {
+              initialValue: 'ws://123.207.136.134:9010/ajaxchattest'
+            })(
               <Input style={{ width: "550px" }} />
             )}
           </FormItem>
           <FormItem>
-            <Button onClick={() => this.onSearch(pageNum, pageSize)} icon="link" type="primary">连接</Button>
-            <Button icon="disconnect" type="primary" onClick={this.addClick} style={{ marginLeft: 10 }}>断开</Button>
+            <Button onClick={this.onConnnect} disabled={isConnected} icon="link" type="primary">连接</Button>
+            <Button icon="disconnect" type="primary" onClick={this.onDisconnect} style={{ marginLeft: 10 }}>断开</Button>
           </FormItem>
-        </Form>
-        <div style={{ marginTop: "24px" }}>
-          <div style={{ height: "400px", width: "60%", overflowY: "auto", border: "1px solid #ccc", padding: "10px" }}>
-            <List
-              dataSource={_data}
-              itemLayout="horizontal"
-              renderItem={props => <SingleMessage {...props} />}
-            />
+
+          <div style={{ marginTop: "24px" }}>
+            <div ref={(el) => { this.messagesEnd = el; }} style={{ height: "400px", width: "60%", overflowY: "auto", border: "1px solid #ccc", padding: "10px" }}>
+              <List
+                dataSource={messageList}
+                itemLayout="horizontal"
+                renderItem={props => <SingleMessage {...props} />}
+              />
+            </div>
+            <Row style={{ marginTop: 10 }}>
+
+              <FormItem>
+                {getFieldDecorator('message')(
+                  <Input style={{ width: "700px" }} />
+                )}
+              </FormItem>
+              <FormItem>
+                <Button style={{ marginLeft: 10 }} disabled={!isConnected} onClick={this.sendMessage}>发送</Button>
+              </FormItem>
+
+            </Row>
           </div>
-          <Row style={{ marginTop: 10 }}>
-            <Input style={{ width: "54%" }}></Input>
-            <Button style={{ marginLeft: 10 }}>发送</Button>
-          </Row>
-        </div>
-        <AddModal />
+        </Form>
       </Card>
     )
   }

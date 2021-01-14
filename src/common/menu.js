@@ -6,6 +6,12 @@ const menuData = [
 
     },
     {
+        name: 'json',
+        icon: 'shop',
+        path: '/jsonPage', //必须唯一
+
+    },
+    {
         name: '账户',
         icon: 'user',
         path: 'user',

@@ -15,7 +15,7 @@ class BasicLayout extends PureComponent {
                 <div className={styles.content}>
                     <Switch>
                         {/* {!getLoginStatu() && <Redirect to="/user/login" />} */}
-                        <Redirect exact from="/" to="/setting" />
+                        <Redirect exact from="/" to="/jsonPage" />
                         {routes.map((route, i) => (
                             <RouteWithSubRoutes key={i} {...route} />
                         ))}

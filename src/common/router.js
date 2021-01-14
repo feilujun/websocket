@@ -16,6 +16,10 @@ export const getRouterData = (app) => [
                 path: "/setting",
                 component: dynamicWrapper(app, ["setting"], () => import('../routes/setting')),
             },
+            {
+                path: "/jsonPage",
+                component: dynamicWrapper(app, ["jsonPage"], () => import('../routes/jsonPage')),
+            },
             /***测试例子页面 end */
 
             /*---公共错误界面 start */

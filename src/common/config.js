@@ -1,8 +1,8 @@
-import logoDark from "../assets/logo-dark.png"
-import logoLight from "../assets/logo-light.png"
+// import logoDark from "../assets/logo-dark.png"
+// import logoLight from "../assets/logo-light.png"
 let Config = {
-    logoDark: logoDark,
-    logoLight: logoLight,
+    // logoDark: logoDark,
+    // logoLight: logoLight,
     headertTheme: "light"       // "light" || "dark"
 }
 

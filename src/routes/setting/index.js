@@ -118,7 +118,7 @@ class Index extends PureComponent {
   transferMessage = (msgList = []) => {
     let message = ''
     msgList.forEach(item => {
-      message = message + item.datetime + '<br/>' 
+      // message = message + item.datetime + '<br/>' 
       message = message + item.content + '<br/>'
     })
     return message

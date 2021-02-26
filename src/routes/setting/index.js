@@ -5,20 +5,6 @@ import moment from 'moment';
 
 const FormItem = Form.Item;
 const confirm = Modal.confirm;
-const _data = [
-  {
-    sender: '0',
-    color: 'green',
-    content: <p>123</p>,
-    datetime: moment().format("YYYY-MM-DD HH:mm:ss"),
-  },
-  {
-    sender: '1',
-    color: 'blue',
-    content: <p>123</p>,
-    datetime: moment().format("YYYY-MM-DD HH:mm:ss"),
-  },
-]
 @Form.create()
 @connect(({ setting, loading }) => {
   const { dataSource, pageNum, pageSize, totalCount } = setting
@@ -68,7 +54,8 @@ class Index extends PureComponent {
     const { messageList } = this.state
     const message = {
       color: 'red',
-      content: <p>连接成功，现在你可以发送信息啦！！！</p>
+      content: '连接成功，现在你可以发送信息啦！！！',
+      datetime: moment().format("YYYY-MM-DD HH:mm:ss")
     }
     const url = this.props.form.getFieldValue('url')
     this.ws = new WebSocket(url)
@@ -83,7 +70,8 @@ class Index extends PureComponent {
     this.ws.close()
     const message = {
       color: 'red',
-      content: <p>websocket连接已断开!!!</p>
+      content: 'websocket连接已断开!!!',
+      datetime: moment().format("YYYY-MM-DD HH:mm:ss")
     }
     this.setState({
       isConnected: false,
@@ -96,7 +84,7 @@ class Index extends PureComponent {
     const newMessage = {
       sender: '1',
       color: 'blue',
-      content: <p>{data}</p>,
+      content: data,
       datetime: moment().format("YYYY-MM-DD HH:mm:ss"),
     }
     this.setState({
@@ -111,7 +99,7 @@ class Index extends PureComponent {
     const newMessage = {
       sender: '0',
       color: 'green',
-      content: <p>{message}</p>,
+      content: message,
       datetime: moment().format("YYYY-MM-DD HH:mm:ss"),
     }
     this.setState({
@@ -126,6 +114,14 @@ class Index extends PureComponent {
       this.messagesEnd.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
       //如果实际高度大于可见高度，说明是有滚动条的，则直接把网页被卷去的高度设置为两个div的高度差，实际效果就是滚动到底部了。
     }
+  }
+  transferMessage = (msgList = []) => {
+    let message = ''
+    msgList.forEach(item => {
+      message = message + item.datetime + '<br/>' 
+      message = message + item.content + '<br/>'
+    })
+    return message
   }
   render() {
     const { form: { getFieldDecorator } } = this.props;
@@ -148,7 +144,7 @@ class Index extends PureComponent {
           <Row>
             <FormItem>
               {getFieldDecorator('url', {
-                initialValue: 'ws://123.207.136.134:9010/ajaxchattest'
+                initialValue: 'ws://192.168.205.14:9181/api/ws'
               })(
                 <Input style={{ width: "550px" }} />
               )}
@@ -172,17 +168,20 @@ class Index extends PureComponent {
             <span style={{ lineHeight: "50px", color: "rgb(204, 204, 204)" }}>当前限制缓存条数：{limit}</span>
           </Row>
           <div style={{ marginTop: "6px" }}>
-            <div ref={(el) => { this.messagesEnd = el; }} style={{ height: "400px", width: "60%", overflowY: "auto", border: "1px solid #ccc", padding: "10px" }}>
-              <List
+            <div ref={(el) => { this.messagesEnd = el; }} style={{ height: "400px", width: "60%", overflowY: "auto", border: "1px solid #ccc", padding: "10px" }} dangerouslySetInnerHTML={{__html:this.transferMessage(messageList)}}>
+              {/* <List
                 dataSource={messageList}
                 itemLayout="horizontal"
                 renderItem={props => <SingleMessage {...props} />}
-              />
+              /> */}
+              {/* {this.transferMessage(messageList)} */}
             </div>
             <Row style={{ marginTop: 10 }}>
 
               <FormItem>
-                {getFieldDecorator('message')(
+                {getFieldDecorator('message', {
+                  initialValue: 'qtj://a?action=CAROUSEL&content=DEFAULT_TOPIC'
+                })(
                   <Input style={{ width: "700px" }} />
                 )}
               </FormItem>
